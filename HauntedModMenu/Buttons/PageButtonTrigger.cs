@@ -4,7 +4,7 @@ using System.Text;
 
 namespace HauntedModMenu.Buttons
 {
-	class PageButtonTrigger : HandTrigger
+	class PageButtonTrigger : ButtonTrigger
 	{
 	}
 }

@@ -15,6 +15,10 @@ namespace HauntedModMenu.Menu
 		private static readonly Color enabledColor = new Color(0.4951f, 0.7075f, 0.3771f, 1f);
 		private static readonly Color disabledColor = new Color(0.8396f, 0.2495f, 0.2495f, 1f);
 
+		private Buttons.PageButtonTrigger nextPageButton = null;
+		private Buttons.PageButtonTrigger previousPageButton = null;
+		private Buttons.ModButtonTrigger[] modButtonArray = new Buttons.ModButtonTrigger[5] { null, null, null, null, null };
+
 		private void Awake()
 		{
 			LoadMenu();
@@ -44,52 +48,103 @@ namespace HauntedModMenu.Menu
 			string[,] textInfo = new string[,] { {"MenuTitle", "Haunted Mod Menu" }, {"PageText", "Pages" } };
 			Vector3[] positions = new Vector3[] { new Vector3(0f, 0.435f, -0.51f), new Vector3(0f, -0.4f, -0.51f) };
 
-			GameObject go = null;
 			int loopIndex;
+			GameObject go = null;
+			Quaternion zeroRotation = Quaternion.identity;
 
 			for (loopIndex = 0; loopIndex < 2; loopIndex++) {
 				go = new GameObject(textInfo[loopIndex, 0]);
 
 				if (go != null) {
-					SetLocal(go.transform, positions[loopIndex], new Vector3(0.0018f, 0.0018f, 0f), Quaternion.identity);
+					SetLocal(go.transform, positions[loopIndex], new Vector3(0.0018f, 0.0018f, 0f), zeroRotation);
 					AddUI(textInfo[loopIndex, 1], go, 50, new Vector2(555f, 60f), new Color(0.6132f, 0.6132f, 0.6132f, 1f));
+					go = null;
 				}
 			}
 
-			go = null;
 			GameObject textObject = null;
+			Vector2 rectSize = new Vector2(450f, 85f);
 			Vector3 buttonPos = new Vector3(0f, 0.3f, -1f);
 			Vector3 buttonTextPos = new Vector3(0f, 0f, -0.51f);
 			Vector3 buttonScale = new Vector3(0.75f, 0.1f, 0.75f);
 			Vector3 buttonTextScale = new Vector3(0.002208869f, 0.01262004f, 1f);
 
-			for (loopIndex = 0; loopIndex < 5; loopIndex++) {
-
+			for (loopIndex = 0; loopIndex < modButtonArray?.Length; loopIndex++) {
+				
+				// create the button
 				go = CreateButton($"ModButton{loopIndex}");
-				if (go == null)
-					continue;
+				SetLocal(go?.transform, buttonPos, buttonScale, zeroRotation);	
 
-				SetLocal(go.transform, buttonPos, buttonScale, Quaternion.identity);	
-				buttonPos.y -= 0.135f;
-
+				// creat the text object
 				textObject = new GameObject($"ButtonText{loopIndex}");
-				if (textObject == null)
-					continue;
 
-				SetLocal(textObject.transform, buttonTextPos, buttonTextScale, Quaternion.identity, go.transform);
-				AddUI(emptyName, textObject, 45, new Vector2(450f, 85f), Color.black);
+				if (textObject != null) {
+					SetLocal(textObject.transform, buttonTextPos, buttonTextScale, zeroRotation, go?.transform);
+					AddUI(emptyName, textObject, 45, rectSize, Color.black);
 
-				Buttons.ModButtonTrigger mbt = go.AddComponent<Buttons.ModButtonTrigger>();
-				if (mbt != null) {
-					// replace this with color's loaded from config in the future
-					mbt.EnabledColor = enabledColor;
-					mbt.DisabledColor = disabledColor;
+					// add the trigger script
+					Buttons.ModButtonTrigger mbt = go?.AddComponent<Buttons.ModButtonTrigger>();
+					if (mbt != null) {
+						// replace this with color's loaded from config in the future
+						mbt.EnabledColor = enabledColor;
+						mbt.DisabledColor = disabledColor;
+
+						modButtonArray[loopIndex] = mbt;
+					}
 				}
+
+				// move the button position down
+				buttonPos.y -= 0.135f;
+			}
+
+			buttonPos.x = -0.35f;
+			buttonPos.y = -0.4f;
+			buttonScale.x = 0.2f;
+
+			textInfo[0, 0] = "Previous";
+			textInfo[0, 1] = "<<<<<<<<<<";
+			textInfo[1, 0] = "Next";
+			textInfo[1, 1] = ">>>>>>>>>>";
+
+			GameObject[] pageButtons = new GameObject[] { null, null };
+			Buttons.PageButtonTrigger[] pageTriggers = new Buttons.PageButtonTrigger[] { null, null };
+
+			for (loopIndex = 0; loopIndex < pageButtons?.Length; loopIndex++) {
+				go = CreateButton($"{textInfo[loopIndex, 0]}PageButton");
+				textObject = new GameObject($"{textInfo[loopIndex, 0]}PageText");
+
+				AddUI(textInfo[loopIndex, 1], textObject, 50, rectSize, Color.black);
+				SetLocal(go?.transform, buttonPos, buttonScale, zeroRotation);
+				SetLocal(textObject?.transform, buttonTextPos, buttonTextScale, zeroRotation, go?.transform);
+
+				Buttons.PageButtonTrigger pbt = go?.AddComponent<Buttons.PageButtonTrigger>();
+				if (pbt != null) {
+					pbt.EnabledColor = enabledColor;
+					pbt.DisabledColor = disabledColor;
+				}
+
+				buttonPos.x *= -1f;
+				pageButtons[loopIndex] = go;
+				pageTriggers[loopIndex] = pbt;
+			}
+
+			previousPageButton = pageTriggers[0];
+			nextPageButton = pageTriggers[1];
+
+			if(previousPageButton != null) {
+				// set callback stuff here
+			}
+
+			if(nextPageButton != null) {
+				// set callback stuff here
 			}
 		}
 
-		private void AddUI(string text, GameObject go, int fontSize, Vector2 rectSize, Color textColor)
+		private void AddUI(string text, GameObject go, in int fontSize, in Vector2 rectSize, in Color textColor)
 		{
+			if (go == null)
+				return;
+
 			RectTransform rect = go.AddComponent<RectTransform>();
 			go.AddComponent<CanvasRenderer>();
 			Text textUI = go.AddComponent<Text>();
@@ -118,7 +173,6 @@ namespace HauntedModMenu.Menu
 			if (col != null)
 				col.isTrigger = true;
 
-			go.transform.SetParent(this.gameObject.transform);
 			go.name = name != null ? name : "HauntedModMenuButton";
 			// go.GetComponent<Renderer>()?.material?.SetColor("_Color", disabledColor);
 
