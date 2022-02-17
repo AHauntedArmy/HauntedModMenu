@@ -1,33 +1,31 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Reflection;
-
-using BepInEx;
+﻿using BepInEx;
 
 namespace HauntedModMenu.Utils
 {
 	public class ModInfo
 	{
+		private BaseUnityPlugin mod = null;
+
 		public bool Enabled {
-			get => Enabled;
+			get {
+				if (mod == null)
+					return false;
+
+				return mod.enabled;
+			}
+
 			set {
-				Enabled = value;
-				ModMenuEnable?.Invoke(Mod, new object[] { value });
+				if (mod != null)
+					mod.enabled = value;
 			} 
 		}
 
 		public string Name { get; private set; } = null;
-		public BaseUnityPlugin Mod { get; private set; } = null;
-		public MethodInfo ModMenuEnable { get; private set; } = null;
 
-		public ModInfo(BaseUnityPlugin mod, string modName, MethodInfo enableFunc)
+		public ModInfo(BaseUnityPlugin plugin, string modName)
 		{
-			Mod = mod;
+			mod = plugin;
 			Name = modName;
-			ModMenuEnable = enableFunc;
-
-			Enabled = false;
 		}
 	}
 }

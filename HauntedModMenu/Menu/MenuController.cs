@@ -1,10 +1,7 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Reflection;
 using System.Collections.Generic;
-using System.Text;
 
-using BepInEx;
 using BepInEx.Configuration;
 
 using UnityEngine;
@@ -108,13 +105,15 @@ namespace HauntedModMenu.Menu
 			handSensitivity = handSensitivityConfig.Value;
 
 
-			if (RefCache.ModList.Count > 0) {
+			if (RefCache.ModList?.Count > 0) {
 				foreach (ModInfo modInfo in RefCache.ModList) {
 					ConfigEntry<bool> entry = config.Bind(modInfo.Name, "Enabled", false);
-					modConfigs.Add(modInfo.Name, entry);
 
-					if(entry.Value)
-						modInfo.ModMenuEnable?.Invoke(modInfo.Mod, new object[] { entry.Value });
+					if (entry != null) {
+
+						modInfo.Enabled = entry.Value;
+						modConfigs.Add(modInfo.Name, entry);
+					}
 				}
 			}
 
@@ -181,7 +180,7 @@ namespace HauntedModMenu.Menu
 
 			go.AddComponent<MenuView>();
 
-			// go.SetActive(false);
+			go.SetActive(false);
 			menu = go;
 		}
 	}

@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Reflection;
+using System.ComponentModel;
 
 using BepInEx;
 using BepInEx.Bootstrap;
@@ -12,11 +12,6 @@ using Utilla;
 
 namespace HauntedModMenu
 {
-	/// <summary>
-	/// This is your mod's main class.
-	/// </summary>
-
-	/* This attribute tells Utilla to look for [ModdedGameJoin] and [ModdedGameLeave] */
 	[ModdedGamemode]
 	[BepInDependency("org.legoandmars.gorillatag.utilla", "1.5.0")]
 	[BepInPlugin(PluginInfo.GUID, PluginInfo.Name, PluginInfo.Version)]
@@ -42,27 +37,37 @@ namespace HauntedModMenu
 
 		private void Start()
 		{
-			Type[] funcParem = new Type[] { typeof(bool) };
-
 			foreach(BepInEx.PluginInfo plugin in Chainloader.PluginInfos.Values) {
 
 				BaseUnityPlugin modPlugin = plugin.Instance;
-				MethodInfo modImpl = AccessTools.Method(modPlugin.GetType(), "HauntedModMenuEnable", funcParem);
+				Type type = modPlugin.GetType();
+				DescriptionAttribute modDescription = type.GetCustomAttribute<DescriptionAttribute>();
 
-				if (modImpl != null) {
-					Utils.RefCache.ModList.Add(new Utils.ModInfo(modPlugin, plugin.Metadata.Name, modImpl));
+				if (modDescription == null)
+					continue;
+
+				if (modDescription.Description.Contains("HauntedModMenu")) {
+					var enableImp = AccessTools.Method(type, "OnEnable");
+					var disableImp = AccessTools.Method(type, "OnDisable");
+
+					if(enableImp != null && disableImp != null)
+						Utils.RefCache.ModList.Add(new Utils.ModInfo(modPlugin, plugin.Metadata.Name));
 				}
 			}
+
+			Utilla.Events.GameInitialized += OnGameInitialized;
 		}
 
 		private void OnEnable()
 		{
-			Utilla.Events.GameInitialized += OnGameInitialized;
+			if (menuObject != null && inRoom)
+				menuObject.SetActive(true);
 		}
 
 		private void OnDisable()
 		{
-			
+			if (menuObject != null)
+				menuObject.SetActive(false);
 		}
 
 		private void OnGameInitialized(object sender, EventArgs e)
@@ -73,13 +78,6 @@ namespace HauntedModMenu
 
 			Utils.RefCache.LeftHandRig = GameObject.Find("OfflineVRRig/Actual Gorilla/rig/body/shoulder.L/upper_arm.L/forearm.L/hand.L");
 			Utils.RefCache.RightHandRig = GameObject.Find("OfflineVRRig/Actual Gorilla/rig/body/shoulder.R/upper_arm.R/forearm.R/hand.R");
-
-			OnJoin(null);
-		}
-
-		private void Update()
-		{
-			/* Code here runs every frame when the mod is enabled */
 		}
 
 		/* This attribute tells Utilla to call this method when a modded room is joined */
@@ -89,8 +87,11 @@ namespace HauntedModMenu
 			inRoom = true;
 
 			menuObject = CreateTrigger();
-			if (menuObject != null)
+
+			if (menuObject != null) {
 				menuObject.AddComponent<Menu.MenuController>();
+				menuObject.SetActive(this.enabled && this.inRoom);
+			}
 		}
 
 		/* This attribute tells Utilla to call this method when a modded room is left */
@@ -110,6 +111,10 @@ namespace HauntedModMenu
 			Collider col = go.GetComponent<Collider>();
 			if (col != null)
 				col.isTrigger = true;
+
+			MeshRenderer render = go.GetComponent<MeshRenderer>();
+			if (render != null)
+				UnityEngine.Object.Destroy(render);
 
 			return go;
 		}

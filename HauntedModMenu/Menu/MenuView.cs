@@ -1,8 +1,6 @@
-﻿using System;
+﻿using System.Linq;
 using System.Collections.Generic;
-using System.Text;
-using System.IO;
-using System.Reflection;
+
 
 using UnityEngine;
 using UnityEngine.UI;
@@ -19,11 +17,68 @@ namespace HauntedModMenu.Menu
 		private Buttons.PageButtonTrigger previousPageButton = null;
 		private Buttons.ModButtonTrigger[] modButtonArray = new Buttons.ModButtonTrigger[5] { null, null, null, null, null };
 
+		private int page;
+		private int pageMax;
+		const int pageSize = 5;
+
 		private void Awake()
 		{
+			page = 0;
+			pageMax = Mathf.FloorToInt(Utils.RefCache.ModList.Count / (float)pageSize);
+
 			LoadMenu();
+			UpdateButtons();
 		}
 
+		private void NextPage()
+		{
+			if (page < pageMax) {
+				page += 1;
+				UpdateButtons();
+			}
+		}
+
+		private void PreviousPage()
+		{
+			if (page > 0) {
+				page -= 1;
+				UpdateButtons();
+			}
+		}
+
+		private void UpdateButtons()
+		{
+			List<Utils.ModInfo> currentMods = Utils.RefCache.ModList?.Skip(page * pageSize).Take(pageSize).ToList();
+			int? modCount = currentMods?.Count;
+
+			for (int index = 0; index < modButtonArray?.Length; index++) {
+				Buttons.ModButtonTrigger button = modButtonArray[index];
+				if (index < modCount) {
+					button.ModTarget = currentMods[index];
+					button.ButtonText.text = currentMods[index].Name;
+				
+				} else {
+					button.ModTarget = null;
+					button.ButtonText.text = emptyName;
+				}
+			}
+
+			if (page < pageMax) {
+				nextPageButton.SetColour(true);
+			
+			} else {
+				nextPageButton.SetColour(false);
+			}
+
+			if (page > pageMax) {
+				previousPageButton.SetColour(true);
+			
+			} else {
+				previousPageButton.SetColour(false);
+			}
+		}
+
+		#region CREATE_MENU
 		private void LoadMenu()
 		{
 			Debug.Log("loading menu");
@@ -88,7 +143,7 @@ namespace HauntedModMenu.Menu
 						// replace this with color's loaded from config in the future
 						mbt.EnabledColor = enabledColor;
 						mbt.DisabledColor = disabledColor;
-
+						mbt.SetColour(false);
 						modButtonArray[loopIndex] = mbt;
 					}
 				}
@@ -106,10 +161,9 @@ namespace HauntedModMenu.Menu
 			textInfo[1, 0] = "Next";
 			textInfo[1, 1] = ">>>>>>>>>>";
 
-			GameObject[] pageButtons = new GameObject[] { null, null };
 			Buttons.PageButtonTrigger[] pageTriggers = new Buttons.PageButtonTrigger[] { null, null };
 
-			for (loopIndex = 0; loopIndex < pageButtons?.Length; loopIndex++) {
+			for (loopIndex = 0; loopIndex < pageTriggers?.Length; loopIndex++) {
 				go = CreateButton($"{textInfo[loopIndex, 0]}PageButton");
 				textObject = new GameObject($"{textInfo[loopIndex, 0]}PageText");
 
@@ -121,23 +175,21 @@ namespace HauntedModMenu.Menu
 				if (pbt != null) {
 					pbt.EnabledColor = enabledColor;
 					pbt.DisabledColor = disabledColor;
+					pbt.SetColour(false);
 				}
 
 				buttonPos.x *= -1f;
-				pageButtons[loopIndex] = go;
 				pageTriggers[loopIndex] = pbt;
 			}
 
 			previousPageButton = pageTriggers[0];
 			nextPageButton = pageTriggers[1];
 
-			if(previousPageButton != null) {
-				// set callback stuff here
-			}
+			if(previousPageButton != null) 
+				previousPageButton.PageUpdate = PreviousPage;
 
-			if(nextPageButton != null) {
-				// set callback stuff here
-			}
+			if (nextPageButton != null)
+				nextPageButton.PageUpdate = NextPage;
 		}
 
 		private void AddUI(string text, GameObject go, in int fontSize, in Vector2 rectSize, in Color textColor)
@@ -193,5 +245,6 @@ namespace HauntedModMenu.Menu
 			goTrans.localRotation = localRotation;
 			goTrans.localScale = localScale;
 		}
+		#endregion
 	}
 }

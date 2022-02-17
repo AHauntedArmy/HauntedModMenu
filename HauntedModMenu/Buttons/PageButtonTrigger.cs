@@ -1,10 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace HauntedModMenu.Buttons
 {
 	class PageButtonTrigger : ButtonTrigger
 	{
+		public Action PageUpdate { get; set; }
+
+		protected override void HandTriggered()
+		{
+			PageUpdate();
+		}
 	}
 }
