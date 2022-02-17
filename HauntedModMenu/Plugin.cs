@@ -25,6 +25,21 @@ namespace HauntedModMenu
 		private bool inRoom;
 		private GameObject menuObject = null;
 
+		private void Awake()
+		{
+			var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("HauntedModMenu.Resources.font");
+			if (stream == null)
+				return;
+
+			var fontBundle = AssetBundle.LoadFromStream(stream);
+			if (fontBundle == null)
+				return;
+
+			Utils.RefCache.CustomFont = fontBundle.LoadAsset<Font>("ShortBaby");
+
+			fontBundle.Unload(false);
+		}
+
 		private void Start()
 		{
 			Type[] funcParem = new Type[] { typeof(bool) };

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.IO;
+using System.Reflection;
 
 using UnityEngine;
 using UnityEngine.UI;
@@ -9,8 +11,7 @@ namespace HauntedModMenu.Menu
 {
 	class MenuView : MonoBehaviour
 	{
-		private static Font defaultFont = null;
-
+		private static readonly string emptyName = "<------------------>";
 		private static readonly Color enabledColor = new Color(0.4951f, 0.7075f, 0.3771f, 1f);
 		private static readonly Color disabledColor = new Color(0.8396f, 0.2495f, 0.2495f, 1f);
 
@@ -22,9 +23,6 @@ namespace HauntedModMenu.Menu
 		private void LoadMenu()
 		{
 			Debug.Log("loading menu");
-
-			if (defaultFont == null)
-				defaultFont = (Font)Resources.GetBuiltinResource(typeof(Font), "Arial.ttf");
 
 			this.gameObject.GetComponent<Renderer>()?.material?.SetColor("_Color", Color.black); 
 
@@ -47,51 +45,50 @@ namespace HauntedModMenu.Menu
 			Vector3[] positions = new Vector3[] { new Vector3(0f, 0.435f, -0.51f), new Vector3(0f, -0.4f, -0.51f) };
 
 			GameObject go = null;
+			int loopIndex;
 
-			for (int index = 0; index < 2; index++) {
-				go = new GameObject(textInfo[index, 0]);
+			for (loopIndex = 0; loopIndex < 2; loopIndex++) {
+				go = new GameObject(textInfo[loopIndex, 0]);
 
 				if (go != null) {
-					SetLocal(go.transform, positions[index], new Vector3(0.0018f, 0.0018f, 0f), Quaternion.identity);
-					AddUI(textInfo[index, 1], go, new Vector2(555f, 60f), new Color(0.6132f, 0.6132f, 0.6132f, 1f));
+					SetLocal(go.transform, positions[loopIndex], new Vector3(0.0018f, 0.0018f, 0f), Quaternion.identity);
+					AddUI(textInfo[loopIndex, 1], go, 50, new Vector2(555f, 60f), new Color(0.6132f, 0.6132f, 0.6132f, 1f));
 				}
 			}
 
 			go = null;
+			GameObject textObject = null;
 			Vector3 buttonPos = new Vector3(0f, 0.3f, -1f);
 			Vector3 buttonTextPos = new Vector3(0f, 0f, -0.51f);
 			Vector3 buttonScale = new Vector3(0.75f, 0.1f, 0.75f);
 			Vector3 buttonTextScale = new Vector3(0.002208869f, 0.01262004f, 1f);
-			GameObject textObject = null;
 
-			for (int i = 0; i < 5; i++) {
+			for (loopIndex = 0; loopIndex < 5; loopIndex++) {
 
-				go = CreateButton($"ModButton{i}");
+				go = CreateButton($"ModButton{loopIndex}");
 				if (go == null)
 					continue;
 
-				go.transform.localPosition = buttonPos;
-				go.transform.localRotation = Quaternion.identity;
-				go.transform.localScale = buttonScale;
-				
+				SetLocal(go.transform, buttonPos, buttonScale, Quaternion.identity);	
 				buttonPos.y -= 0.135f;
 
-				textObject = new GameObject("ButtonText");
+				textObject = new GameObject($"ButtonText{loopIndex}");
 				if (textObject == null)
 					continue;
 
-				textObject.transform.SetParent(go.transform);
-				textObject.transform.localRotation = Quaternion.identity;
-				textObject.transform.localPosition = buttonTextPos;
-				textObject.transform.localScale = buttonTextScale;
-
-				AddUI("", textObject, new Vector2(450f, 85f), Color.black);
+				SetLocal(textObject.transform, buttonTextPos, buttonTextScale, Quaternion.identity, go.transform);
+				AddUI(emptyName, textObject, 45, new Vector2(450f, 85f), Color.black);
 
 				Buttons.ModButtonTrigger mbt = go.AddComponent<Buttons.ModButtonTrigger>();
+				if (mbt != null) {
+					// replace this with color's loaded from config in the future
+					mbt.EnabledColor = enabledColor;
+					mbt.DisabledColor = disabledColor;
+				}
 			}
 		}
 
-		private void AddUI(string text, GameObject go, Vector2 rectSize, Color textColor)
+		private void AddUI(string text, GameObject go, int fontSize, Vector2 rectSize, Color textColor)
 		{
 			RectTransform rect = go.AddComponent<RectTransform>();
 			go.AddComponent<CanvasRenderer>();
@@ -101,10 +98,10 @@ namespace HauntedModMenu.Menu
 				rect.sizeDelta = rectSize;
 
 			if (textUI != null) {
-				textUI.fontSize = 50;
-				textUI.fontStyle = FontStyle.Bold;
+				textUI.fontSize = fontSize;
+				textUI.fontStyle = FontStyle.Normal;
 				textUI.alignment = TextAnchor.MiddleCenter;
-				textUI.font = defaultFont;
+				textUI.font = Utils.RefCache.CustomFont;
 				textUI.supportRichText = false;
 				textUI.color = textColor;
 				textUI.text = text;
@@ -123,13 +120,13 @@ namespace HauntedModMenu.Menu
 
 			go.transform.SetParent(this.gameObject.transform);
 			go.name = name != null ? name : "HauntedModMenuButton";
-			go.GetComponent<Renderer>()?.material?.SetColor("_Color", disabledColor);
+			// go.GetComponent<Renderer>()?.material?.SetColor("_Color", disabledColor);
 
 			return go;
 		}
 
 
-		private void SetLocal(Transform goTrans, Vector3 localPos, Vector3 localScale, Quaternion localRotation, Transform parent = null)
+		private void SetLocal(Transform goTrans, in Vector3 localPos, in Vector3 localScale, in Quaternion localRotation, Transform parent = null)
 		{
 			if (goTrans == null)
 				return;

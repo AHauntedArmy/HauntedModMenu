@@ -9,6 +9,7 @@ namespace HauntedModMenu.Utils
 	// static class to cache references
 	public static class RefCache
 	{
+		public static Font CustomFont { get; set; } = null;
 		public static List<ModInfo> ModList { get; private set; } = new List<ModInfo>();
 
 		// left hand references

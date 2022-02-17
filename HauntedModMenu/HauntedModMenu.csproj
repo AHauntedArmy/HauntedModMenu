@@ -5,6 +5,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include= "Resources/font" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Reference Include="0Harmony">
       <HintPath>$(BepInExAssemblyPath)\0Harmony.dll</HintPath>
     </Reference>
@@ -284,5 +288,9 @@
     <Reference Include="websocket-sharp">
       <HintPath>$(GameAssemblyPath)\websocket-sharp.dll</HintPath>
     </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Resources\" />
   </ItemGroup>
 </Project>
