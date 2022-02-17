@@ -20,11 +20,9 @@ namespace HauntedModMenu.Buttons
 
 		public void SetColour(bool enabled)
 		{
-			Debug.Log("set colour called");
 			if (ButtonMaterial == null)
 				return;
 
-			Debug.Log("attempting to set colour");
 			ButtonMaterial.SetColor("_Color", enabled ? EnabledColor : DisabledColor);
 		}
 	}

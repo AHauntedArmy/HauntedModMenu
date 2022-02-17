@@ -54,6 +54,8 @@ namespace HauntedModMenu.Menu
 
 			if (menuTrigger != null)
 				menuTrigger.enabled = false;
+
+			SaveConfig();
 		}
 
 		private void OnDestroy()
@@ -90,34 +92,28 @@ namespace HauntedModMenu.Menu
 
 		private void LoadConfig()
 		{
-			config = new ConfigFile(filePath, true);
-			modConfigs = new Dictionary<string, ConfigEntry<bool>>();
-
-			if (config == null || modConfigs == null)
-				return;
-
-			config.SaveOnConfigSet = false;
-
-			leftHandConfig = config.Bind("Hand Config", "LeftHand", true, "Which hand the menu is on, true = left hand, false = right hand.");
-			handSensitivityConfig = config.Bind("Hand Config", "Sensitivity", 1f, "how sensitive the button is to activite, higher number = more sensitive.");
-
-			// leftHand = leftHandConfig.Value;
-			handSensitivity = handSensitivityConfig.Value;
+			leftHand = Config.LoadData("Hand Config", "LeftHand", "which hand the menu is on, true = left hand, false = right hand.", true);
+			handSensitivity = Config.LoadData("Hand Config", "Sensitivity", "how sensitive the button is to activate, higher number = more sensitive.", 0.8f);
 
 			// load mod status
 			if (RefCache.ModList?.Count > 0) {
 				foreach (ModInfo modInfo in RefCache.ModList) {
-					ConfigEntry<bool> entry = config.Bind("Mod Status", modInfo.Name, false);
-
-					if (entry != null) {
-
-						modInfo.Enabled = entry.Value;
-						modConfigs.Add(modInfo.Name, entry);
-					}
+					modInfo.Enabled = Config.LoadData("Mod Status", modInfo.Name, "", modInfo.Enabled);
 				}
 			}
 
-			config.Save();
+			// just in case
+			Config.File?.Save();
+		}
+
+		private void SaveConfig()
+		{
+			if (RefCache.ModList?.Count < 1)
+				return;
+
+			foreach(ModInfo modInfo in RefCache.ModList) {
+				Config.SaveData("Mod Status", modInfo.Name, modInfo.Enabled);
+			}
 		}
 
 		private void SetParent()
@@ -151,16 +147,8 @@ namespace HauntedModMenu.Menu
 
 			menu.SetActive(!menu.activeSelf);
 
-			if (!menu.activeSelf && config != null && modConfigs != null) {
-				ConfigEntry<bool> modConfig = null;
-
-				foreach (ModInfo mod in RefCache.ModList) {
-					if (modConfigs.TryGetValue(mod.Name, out modConfig))
-						modConfig.Value = mod.Enabled;
-				}
-
-				config.Save();
-			}
+			if (!menu.activeSelf)
+				SaveConfig();
 		}
 
 		private void CreateMenuView()
@@ -180,7 +168,7 @@ namespace HauntedModMenu.Menu
 
 			go.AddComponent<MenuView>();
 
-			// go.SetActive(false);
+			go.SetActive(false);
 			menu = go;
 		}
 	}

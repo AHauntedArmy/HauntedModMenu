@@ -250,6 +250,7 @@ namespace HauntedModMenu.Menu
 			goTrans.localRotation = localRotation;
 			goTrans.localScale = localScale;
 		}
+
 		#endregion
 	}
 }
