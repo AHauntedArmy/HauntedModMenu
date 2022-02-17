@@ -47,6 +47,7 @@ namespace HauntedModMenu
 					continue;
 
 				if (modDescription.Description.Contains("HauntedModMenu")) {
+					Debug.Log("found mod");
 					var enableImp = AccessTools.Method(type, "OnEnable");
 					var disableImp = AccessTools.Method(type, "OnDisable");
 
@@ -78,6 +79,7 @@ namespace HauntedModMenu
 
 			Utils.RefCache.LeftHandRig = GameObject.Find("OfflineVRRig/Actual Gorilla/rig/body/shoulder.L/upper_arm.L/forearm.L/hand.L");
 			Utils.RefCache.RightHandRig = GameObject.Find("OfflineVRRig/Actual Gorilla/rig/body/shoulder.R/upper_arm.R/forearm.R/hand.R");
+
 		}
 
 		/* This attribute tells Utilla to call this method when a modded room is joined */
@@ -85,6 +87,9 @@ namespace HauntedModMenu
 		public void OnJoin(string gamemode)
 		{
 			inRoom = true;
+
+			if (menuObject != null)
+				return;
 
 			menuObject = CreateTrigger();
 

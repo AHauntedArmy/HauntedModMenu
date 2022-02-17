@@ -104,10 +104,10 @@ namespace HauntedModMenu.Menu
 			// leftHand = leftHandConfig.Value;
 			handSensitivity = handSensitivityConfig.Value;
 
-
+			// load mod status
 			if (RefCache.ModList?.Count > 0) {
 				foreach (ModInfo modInfo in RefCache.ModList) {
-					ConfigEntry<bool> entry = config.Bind(modInfo.Name, "Enabled", false);
+					ConfigEntry<bool> entry = config.Bind("Mod Status", modInfo.Name, false);
 
 					if (entry != null) {
 
@@ -180,7 +180,7 @@ namespace HauntedModMenu.Menu
 
 			go.AddComponent<MenuView>();
 
-			go.SetActive(false);
+			// go.SetActive(false);
 			menu = go;
 		}
 	}

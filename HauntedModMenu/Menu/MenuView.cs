@@ -54,10 +54,15 @@ namespace HauntedModMenu.Menu
 			for (int index = 0; index < modButtonArray?.Length; index++) {
 				Buttons.ModButtonTrigger button = modButtonArray[index];
 				if (index < modCount) {
+					
+					if(button == null) 
+						continue;
+
 					button.ModTarget = currentMods[index];
 					button.ButtonText.text = currentMods[index].Name;
 				
 				} else {
+					Debug.Log("setting button to default");
 					button.ModTarget = null;
 					button.ButtonText.text = emptyName;
 				}
@@ -70,7 +75,7 @@ namespace HauntedModMenu.Menu
 				nextPageButton.SetColour(false);
 			}
 
-			if (page > pageMax) {
+			if (page > 0) {
 				previousPageButton.SetColour(true);
 			
 			} else {

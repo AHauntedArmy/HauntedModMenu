@@ -1,12 +1,14 @@
-﻿
+﻿using UnityEngine;
+
 namespace HauntedModMenu.Buttons
 {
 	class ModButtonTrigger : ButtonTrigger
 	{
+		private Utils.ModInfo modTarget = null;
 		public Utils.ModInfo ModTarget { 
-			get => ModTarget; 
+			get => modTarget; 
 			set {
-				ModTarget = value;
+				modTarget = value;
 
 				if (value != null) {
 					SetColour(value.Enabled);
@@ -19,10 +21,10 @@ namespace HauntedModMenu.Buttons
 
 		protected override void HandTriggered()
 		{
-			if (ModTarget == null) return;
+			if (modTarget == null) return;
 
-			bool toEnable = !ModTarget.Enabled;
-			ModTarget.Enabled = toEnable;
+			bool toEnable = !modTarget.Enabled;
+			modTarget.Enabled = toEnable;
 			SetColour(toEnable);
 		}
 	}
