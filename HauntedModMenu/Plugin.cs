@@ -75,10 +75,10 @@ namespace HauntedModMenu
 			Utils.RefCache.LeftHandFollower = GorillaLocomotion.Player.Instance.leftHandFollower.gameObject;
 			Utils.RefCache.RightHandFollower = GorillaLocomotion.Player.Instance.rightHandFollower.gameObject;
 			Utils.RefCache.CameraTransform = GorillaLocomotion.Player.Instance.headCollider.transform;
+			Utils.RefCache.PlayerTransform = GorillaLocomotion.Player.Instance.turnParent.transform;
 
 			Utils.RefCache.LeftHandRig = GameObject.Find("OfflineVRRig/Actual Gorilla/rig/body/shoulder.L/upper_arm.L/forearm.L/hand.L");
 			Utils.RefCache.RightHandRig = GameObject.Find("OfflineVRRig/Actual Gorilla/rig/body/shoulder.R/upper_arm.R/forearm.R/hand.R");
-
 		}
 
 		/* This attribute tells Utilla to call this method when a modded room is joined */

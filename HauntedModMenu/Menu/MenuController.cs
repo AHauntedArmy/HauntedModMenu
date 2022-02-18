@@ -6,6 +6,7 @@ namespace HauntedModMenu.Menu
 {
 	class MenuController : Buttons.HandTrigger
 	{
+		private float lookSensitivty;
 		private Collider menuTrigger = null;
 		private GameObject menu = null;
 
@@ -84,14 +85,14 @@ namespace HauntedModMenu.Menu
 			Vector3 lookDir = RefCache.CameraTransform.forward;
 
 			float dotAngle = Vector3.Dot(handDir, lookDir);
-			if (dotAngle < 0.8f)
+			if (dotAngle < lookSensitivty)
 				return;
 
 			
 			if (!menuTrigger.enabled) {
 				dotAngle = Vector3.Dot(this.gameObject.transform.forward, lookDir);
 
-				if (dotAngle > 0.8f)
+				if (dotAngle > lookSensitivty)
 					menuTrigger.enabled = true;
 
 			} else if (menuTrigger.enabled) {
@@ -102,7 +103,8 @@ namespace HauntedModMenu.Menu
 		private void LoadConfig()
 		{
 			leftHand = Config.LoadData("Hand Config", "LeftHand", "which hand the menu is on, true = left hand, false = right hand.", true);
-			handSensitivity = Config.LoadData("Hand Config", "Sensitivity", "how sensitive the button is to activate, higher number = more sensitive.", 0.8f);
+			handSensitivity = Config.LoadData("Hand Config", "Hand Speed Sensitivty", "how slow the hand has to be moving to activate the trigger. higher number = more sensitive", 0.8f);
+			lookSensitivty = Config.LoadData("Hand Config", "Look Sensitivity", "the angle threshold between the camera and the hand need to acivate, value between -1 and 1, -1 = 180 offset (always on), 1 being prefectly inline with the camera. reccomneded 0.7", 0.7f);
 
 			// load mod status
 			if (RefCache.ModList?.Count > 0) {

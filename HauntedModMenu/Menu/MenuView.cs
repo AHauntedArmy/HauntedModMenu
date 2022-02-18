@@ -136,13 +136,13 @@ namespace HauntedModMenu.Menu
 
 				if (textObject != null) {
 					SetLocal(textObject.transform, buttonTextPos, buttonTextScale, zeroRotation, go?.transform);
-					AddUI(emptyName, textObject, 45, rectSize, Config.LoadData("Button Config", $"Button{loopIndex} Text Colour", "The button text colour", Color.black));
+					AddUI(emptyName, textObject, 45, rectSize, Config.LoadData($"cButtonButton{loopIndex} Config", "Text Colour", "The button text colour", Color.black));
 
 					// add the trigger script
 					Buttons.ModButtonTrigger mbt = go?.AddComponent<Buttons.ModButtonTrigger>();
 					if (mbt != null) {
-						mbt.EnabledColor = Config.LoadData("Button Config", $"Button{loopIndex} Enabled Colour", "The enabled colour for the button", enabledColor);
-						mbt.DisabledColor = Config.LoadData("Button Config", $"Button{loopIndex} Disabled Colour", "The disabled colour for the button", disabledColor);
+						mbt.EnabledColor = Config.LoadData($"cButtonButton{loopIndex} Config", "Enabled Colour", "The enabled colour for the button", enabledColor);
+						mbt.DisabledColor = Config.LoadData($"cButtonButton{loopIndex} Config", "Disabled Colour", "The disabled colour for the button", disabledColor);
 
 						mbt.SetColour(false);
 						modButtonArray[loopIndex] = mbt;
@@ -168,14 +168,14 @@ namespace HauntedModMenu.Menu
 				go = CreateButton($"{textInfo[loopIndex, 0]}PageButton");
 				textObject = new GameObject($"{textInfo[loopIndex, 0]}PageText");
 
-				AddUI(textInfo[loopIndex, 1], textObject, 50, rectSize, Config.LoadData("Button Config", $"{textInfo[loopIndex, 0]} Button Text Colour", "The button text colour", Color.black));
+				AddUI(textInfo[loopIndex, 1], textObject, 50, rectSize, Config.LoadData($"c{textInfo[loopIndex, 0]} Button Config", "Text Colour", "The button text colour", Color.black));
 				SetLocal(go?.transform, buttonPos, buttonScale, zeroRotation);
 				SetLocal(textObject?.transform, buttonTextPos, buttonTextScale, zeroRotation, go?.transform);
 
 				Buttons.PageButtonTrigger pbt = go?.AddComponent<Buttons.PageButtonTrigger>();
 				if (pbt != null) {
-					pbt.EnabledColor = Config.LoadData("Button Config", $"{textInfo[loopIndex, 0]} Button Enabled Colour", "The enabled colour for the button", enabledColor);
-					pbt.DisabledColor = Config.LoadData("Button Config", $"{textInfo[loopIndex, 0]} Button Disabled Colour", "The disabled colour for the button", disabledColor);
+					pbt.EnabledColor = Config.LoadData($"c{textInfo[loopIndex, 0]} Button Config", "Enabled Colour", "The enabled colour for the button", enabledColor);
+					pbt.DisabledColor = Config.LoadData($"c{textInfo[loopIndex, 0]} Button Config", "Disabled Colour", "The disabled colour for the button", disabledColor);
 
 					pbt.SetColour(false);
 				}

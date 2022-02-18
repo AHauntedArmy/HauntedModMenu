@@ -19,5 +19,6 @@ namespace HauntedModMenu.Utils
 		public static GameObject RightHandFollower { get; set; } = null;
 
 		public static Transform CameraTransform { get; set; } = null;
+		public static Transform PlayerTransform { get; set; } = null;
 	}
 }
