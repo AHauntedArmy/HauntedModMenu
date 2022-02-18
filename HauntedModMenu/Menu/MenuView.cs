@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+using HauntedModMenu.Utils;
+
 namespace HauntedModMenu.Menu
 {
 	class MenuView : MonoBehaviour
@@ -24,7 +26,7 @@ namespace HauntedModMenu.Menu
 		private void Awake()
 		{
 			page = 0;
-			pageMax = Mathf.FloorToInt(Utils.RefCache.ModList.Count / (float)pageSize);
+			pageMax = Mathf.FloorToInt(RefCache.ModList.Count / (float)pageSize);
 
 			LoadMenu();
 			UpdateButtons();
@@ -48,7 +50,7 @@ namespace HauntedModMenu.Menu
 
 		private void UpdateButtons()
 		{
-			List<Utils.ModInfo> currentMods = Utils.RefCache.ModList?.Skip(page * pageSize).Take(pageSize).ToList();
+			List<ModInfo> currentMods = RefCache.ModList?.Skip(page * pageSize).Take(pageSize).ToList();
 			int? modCount = currentMods?.Count;
 
 			for (int index = 0; index < modButtonArray?.Length; index++) {
@@ -88,17 +90,11 @@ namespace HauntedModMenu.Menu
 		{
 			Debug.Log("loading menu");
 
-			this.gameObject.GetComponent<Renderer>()?.material?.SetColor("_Color", Color.black); 
+			this.gameObject.GetComponent<Renderer>()?.material?.SetColor("_Color", Config.LoadData("Button Menu Config", "Background Colour", "The colour for the background", Color.black)); 
 
 			RectTransform rect = this.gameObject.AddComponent<RectTransform>();
 			Canvas canvas = this.gameObject.AddComponent<Canvas>();
 
-			/*
-			if (canvas != null) {
-				Debug.Log("setting canvas rendering mode");
-				canvas.renderMode = RenderMode.WorldSpace;
-			}
-			*/
 
 			if (rect != null) {
 				Debug.Log("setting menu canvas size");
@@ -112,12 +108,12 @@ namespace HauntedModMenu.Menu
 			GameObject go = null;
 			Quaternion zeroRotation = Quaternion.identity;
 
-			for (loopIndex = 0; loopIndex < 2; loopIndex++) {
+			for (loopIndex = 0; loopIndex < positions?.Length; loopIndex++) {
 				go = new GameObject(textInfo[loopIndex, 0]);
 
 				if (go != null) {
 					SetLocal(go.transform, positions[loopIndex], new Vector3(0.0018f, 0.0018f, 0f), zeroRotation);
-					AddUI(textInfo[loopIndex, 1], go, 50, new Vector2(555f, 60f), new Color(0.6132f, 0.6132f, 0.6132f, 1f));
+					AddUI(textInfo[loopIndex, 1], go, 50, new Vector2(555f, 60f), Config.LoadData("Button Menu Config", $"{textInfo[loopIndex, 0]} Text Colour", $"The colour for the {textInfo[loopIndex, 1]} text", new Color(0.6132f, 0.6132f, 0.6132f, 1f)));
 					go = null;
 				}
 			}
@@ -140,14 +136,14 @@ namespace HauntedModMenu.Menu
 
 				if (textObject != null) {
 					SetLocal(textObject.transform, buttonTextPos, buttonTextScale, zeroRotation, go?.transform);
-					AddUI(emptyName, textObject, 45, rectSize, Color.black);
+					AddUI(emptyName, textObject, 45, rectSize, Config.LoadData("Button Config", $"Button{loopIndex} Text Colour", "The button text colour", Color.black));
 
 					// add the trigger script
 					Buttons.ModButtonTrigger mbt = go?.AddComponent<Buttons.ModButtonTrigger>();
 					if (mbt != null) {
-						// replace this with color's loaded from config in the future
-						mbt.EnabledColor = enabledColor;
-						mbt.DisabledColor = disabledColor;
+						mbt.EnabledColor = Config.LoadData("Button Config", $"Button{loopIndex} Enabled Colour", "The enabled colour for the button", enabledColor);
+						mbt.DisabledColor = Config.LoadData("Button Config", $"Button{loopIndex} Disabled Colour", "The disabled colour for the button", disabledColor);
+
 						mbt.SetColour(false);
 						modButtonArray[loopIndex] = mbt;
 					}
@@ -172,14 +168,15 @@ namespace HauntedModMenu.Menu
 				go = CreateButton($"{textInfo[loopIndex, 0]}PageButton");
 				textObject = new GameObject($"{textInfo[loopIndex, 0]}PageText");
 
-				AddUI(textInfo[loopIndex, 1], textObject, 50, rectSize, Color.black);
+				AddUI(textInfo[loopIndex, 1], textObject, 50, rectSize, Config.LoadData("Button Config", $"{textInfo[loopIndex, 0]} Button Text Colour", "The button text colour", Color.black));
 				SetLocal(go?.transform, buttonPos, buttonScale, zeroRotation);
 				SetLocal(textObject?.transform, buttonTextPos, buttonTextScale, zeroRotation, go?.transform);
 
 				Buttons.PageButtonTrigger pbt = go?.AddComponent<Buttons.PageButtonTrigger>();
 				if (pbt != null) {
-					pbt.EnabledColor = enabledColor;
-					pbt.DisabledColor = disabledColor;
+					pbt.EnabledColor = Config.LoadData("Button Config", $"{textInfo[loopIndex, 0]} Button Enabled Colour", "The enabled colour for the button", enabledColor);
+					pbt.DisabledColor = Config.LoadData("Button Config", $"{textInfo[loopIndex, 0]} Button Disabled Colour", "The disabled colour for the button", disabledColor);
+
 					pbt.SetColour(false);
 				}
 
@@ -213,7 +210,7 @@ namespace HauntedModMenu.Menu
 				textUI.fontSize = fontSize;
 				textUI.fontStyle = FontStyle.Normal;
 				textUI.alignment = TextAnchor.MiddleCenter;
-				textUI.font = Utils.RefCache.CustomFont;
+				textUI.font = RefCache.CustomFont;
 				textUI.supportRichText = false;
 				textUI.color = textColor;
 				textUI.text = text;
@@ -231,7 +228,6 @@ namespace HauntedModMenu.Menu
 				col.isTrigger = true;
 
 			go.name = name != null ? name : "HauntedModMenuButton";
-			// go.GetComponent<Renderer>()?.material?.SetColor("_Color", disabledColor);
 
 			return go;
 		}

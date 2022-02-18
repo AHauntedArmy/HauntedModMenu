@@ -12,13 +12,6 @@ namespace HauntedModMenu.Menu
 {
 	class MenuController : Buttons.HandTrigger
 	{
-		private static readonly string filePath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "config.cfg");
-
-		private ConfigFile config = null;
-		private ConfigEntry<bool> leftHandConfig = null;
-		private ConfigEntry<float> handSensitivityConfig = null;
-		private Dictionary<string, ConfigEntry<bool>> modConfigs = null;
-
 		private Collider menuTrigger = null;
 		private GameObject menu = null;
 
@@ -62,8 +55,6 @@ namespace HauntedModMenu.Menu
 		{
 			UnityEngine.Object.Destroy(leftHandTracker);
 			UnityEngine.Object.Destroy(rightHandTracker);
-
-			config = null;
 		}
 
 		private void Update()
@@ -133,11 +124,9 @@ namespace HauntedModMenu.Menu
 
 		public void SetHand(bool lHand)
 		{
-			if (leftHandConfig != null) {
-				leftHand = lHand;
-				leftHandConfig.Value = lHand;
-				SetParent();
-			}
+			leftHand = lHand;
+			Config.SaveData("Hand Config", "LeftHand", lHand);
+			SetParent();
 		}
 
 		protected override void HandTriggered()
