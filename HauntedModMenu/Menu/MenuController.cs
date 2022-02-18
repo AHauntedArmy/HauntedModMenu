@@ -6,6 +6,7 @@ namespace HauntedModMenu.Menu
 {
 	class MenuController : Buttons.HandTrigger
 	{
+		private bool autoClose;
 		private float lookSensitivty;
 		private Collider menuTrigger = null;
 		private GameObject menu = null;
@@ -85,8 +86,12 @@ namespace HauntedModMenu.Menu
 			Vector3 lookDir = RefCache.CameraTransform.forward;
 
 			float dotAngle = Vector3.Dot(handDir, lookDir);
-			if (dotAngle < lookSensitivty)
+			if (dotAngle < lookSensitivty) {
+				if (autoClose && menu.activeSelf)
+					menu.SetActive(false);
+
 				return;
+			}
 
 			
 			if (!menuTrigger.enabled) {
@@ -102,6 +107,7 @@ namespace HauntedModMenu.Menu
 
 		private void LoadConfig()
 		{
+			autoClose = Config.LoadData("Hand Config", "Auto Close", "whether or not to automatically close the menu when its out of view", true);
 			leftHand = Config.LoadData("Hand Config", "LeftHand", "which hand the menu is on, true = left hand, false = right hand.", true);
 			handSensitivity = Config.LoadData("Hand Config", "Hand Speed Sensitivty", "how slow the hand has to be moving to activate the trigger. higher number = more sensitive", 0.8f);
 			lookSensitivty = Config.LoadData("Hand Config", "Look Sensitivity", "the angle threshold between the camera and the hand need to acivate, value between -1 and 1, -1 = 180 offset (always on), 1 being prefectly inline with the camera. reccomneded 0.7", 0.7f);
