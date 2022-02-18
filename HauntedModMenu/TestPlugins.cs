@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace HauntedModMenu
 {
+	/*
 	[Description("HauntedModMenu")]
 	[BepInPlugin("com.HMM.testclass1", "test class1", "0.0.0")]
 	class TestPlugins1 : BaseUnityPlugin
@@ -87,4 +88,5 @@ namespace HauntedModMenu
 
 		void OnDisable() { }
 	}
+	*/
 }

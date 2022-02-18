@@ -14,6 +14,8 @@ namespace HauntedModMenu.Buttons
 		protected static Utils.ObjectTracker leftHandTracker = null;
 		protected static Utils.ObjectTracker rightHandTracker = null;
 
+		private Coroutine timerRoutine = null;
+
 		protected virtual void Awake()
 		{
 			this.gameObject.layer = LayerMask.NameToLayer("GorillaInteractable");
@@ -23,6 +25,13 @@ namespace HauntedModMenu.Buttons
 
 			if(rightHandTracker == null)
 				rightHandTracker = Utils.RefCache.RightHandFollower?.AddComponent<Utils.ObjectTracker>();
+		}
+
+		protected virtual void OnDisable()
+		{
+			triggered = false;
+			if(timerRoutine != null)
+				StopCoroutine(timerRoutine);
 		}
 
 		private void OnTriggerEnter(Collider collider)
@@ -45,16 +54,16 @@ namespace HauntedModMenu.Buttons
 
 				GorillaTagger.Instance.StartVibration(hand.isLeftHand, GorillaTagger.Instance.tapHapticStrength / 2f, GorillaTagger.Instance.tapHapticDuration);
 
-				StartCoroutine(Timer());
+				timerRoutine = StartCoroutine(Timer());
 				HandTriggered();
-			}
-			
+			}	
 		}
 
 		private IEnumerator Timer()
 		{
 			yield return new WaitForSeconds(1.5f);
 			triggered = false;
+			timerRoutine = null;
 		}
 
 		protected virtual void HandTriggered() { }
