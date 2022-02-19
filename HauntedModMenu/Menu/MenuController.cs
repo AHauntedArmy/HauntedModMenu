@@ -93,14 +93,13 @@ namespace HauntedModMenu.Menu
 				return;
 			}
 
+			dotAngle = Vector3.Dot(this.gameObject.transform.forward, lookDir);
 			
 			if (!menuTrigger.enabled) {
-				dotAngle = Vector3.Dot(this.gameObject.transform.forward, lookDir);
-
 				if (dotAngle > lookSensitivty)
 					menuTrigger.enabled = true;
 
-			} else if (menuTrigger.enabled) {
+			} else if (menuTrigger.enabled && dotAngle < 0.3f) {
 				if (autoClose && menu.activeSelf)
 					HandTriggered();
 
