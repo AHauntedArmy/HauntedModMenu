@@ -88,7 +88,7 @@ namespace HauntedModMenu.Menu
 			float dotAngle = Vector3.Dot(handDir, lookDir);
 			if (dotAngle < lookSensitivty) {
 				if (autoClose && menu.activeSelf)
-					menu.SetActive(false);
+					HandTriggered();
 
 				return;
 			}
@@ -101,6 +101,9 @@ namespace HauntedModMenu.Menu
 					menuTrigger.enabled = true;
 
 			} else if (menuTrigger.enabled) {
+				if (autoClose && menu.activeSelf)
+					HandTriggered();
+
 				menuTrigger.enabled = false;
 			}
 		}
