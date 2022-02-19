@@ -22,7 +22,7 @@ using Utilla;
 namespace ExamplePlugin
 {
     [Description("HauntedModMenu")]
-    [BepInDependency("org.legoandmars.gorillatag.utilla", "1.5.0")] // Make sure to add Utilla 1.5.0 as a dependency!
+    [BepInPlugin("com.ahauntedarmy.gorillatag.exampleplugin", "Example Plugin", "1.0.0")]
     public class ExamplePlugin : BaseUnityPlugin
     {
         bool inAllowedRoom = false;
