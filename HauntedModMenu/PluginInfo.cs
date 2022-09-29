@@ -8,6 +8,6 @@ namespace HauntedModMenu
 	{
 		public const string GUID = "com.ahauntedarmy.gorillatag.hauntedmodmenu";
 		public const string Name = "HauntedModMenu";
-		public const string Version = "1.0.0";
+		public const string Version = "1.0.1";
 	}
 }
