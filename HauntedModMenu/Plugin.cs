@@ -20,24 +20,22 @@ namespace HauntedModMenu
 		private bool inRoom;
 		private GameObject menuObject = null;
 
-		private void Awake()
-		{
-			var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("HauntedModMenu.Resources.font");
-			if (stream == null)
-				return;
-
-			var fontBundle = AssetBundle.LoadFromStream(stream);
-			if (fontBundle == null)
-				return;
-
-			Utils.RefCache.CustomFont = fontBundle.LoadAsset<Font>("ShortBaby");
-
-			fontBundle.Unload(false);
-		}
-
 		private void Start()
 		{
-			foreach(BepInEx.PluginInfo plugin in Chainloader.PluginInfos.Values) {
+            // usage of Awake() now locks the game up on boot so we need this to be in Start now :(
+            var stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("HauntedModMenu.Resources.font");
+            if (stream == null)
+                return;
+
+            var fontBundle = AssetBundle.LoadFromStream(stream);
+            if (fontBundle == null)
+                return;
+
+            Utils.RefCache.CustomFont = fontBundle.LoadAsset<Font>("ShortBaby");
+
+            fontBundle.Unload(false);
+
+            foreach (BepInEx.PluginInfo plugin in Chainloader.PluginInfos.Values) {
 
 				BaseUnityPlugin modPlugin = plugin.Instance;
 				Type type = modPlugin.GetType();
